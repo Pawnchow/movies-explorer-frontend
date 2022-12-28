@@ -1,0 +1,123 @@
+.about-project {
+  padding: 110px 70px;
+}
+
+.about-project__desc {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  margin-bottom: 110px;
+  padding-top: 60px;
+}
+
+.about-project__desc-title {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: -0.04em;
+  margin: 0 0 26px;
+}
+
+.about-project__desc-text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  margin: 0;
+}
+
+.about-project__timeline {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+
+.about-project__timeline-time {
+  margin: 0;
+  text-align: center;
+  padding: 9px 14px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.about-project__timeline-time_backend {
+  background-color: #3DDC84;
+  color: #000;
+}
+
+.about-project__timeline-time_frontend {
+  background-color: #303030;
+  color: #FFF;
+}
+
+.about-project__timeline-desc {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #8B8B8B;
+  margin: 0;
+  padding-top: 14px;
+}
+
+@media screen and (max-width: 768px) {
+  .about-project {
+    padding: 90px 50px;
+  }
+
+  .about-project__desc {
+    margin-bottom: 93px;
+    gap: 30px;
+    padding-top: 70px;
+  }
+
+  .about-project__desc-text {
+    font-size: 12px;
+    line-height: 18px;
+  }
+  
+  .about-project__timeline-time {
+    min-width: 80px;
+  }
+  .about-project__timeline-desc {
+    font-weight: 400;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .about-project {
+    padding: 70px 18px;
+  }
+
+  .about-project__desc {
+    padding-top: 60px;
+    margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+ 
+  .about-project__desc-title {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: -0.04em;
+    margin-bottom: 16px;
+  }
+  
+  .about-project__desc-text {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 26px;
+  }
+  
+  .about-project__timeline-time {
+    font-size: 11px;
+    line-height: 13px;
+    padding: 11px 10px;
+  }
+
+  .about-project__timeline-desc {
+    font-size: 11px;
+    line-height: 13px;
+  }
+}
