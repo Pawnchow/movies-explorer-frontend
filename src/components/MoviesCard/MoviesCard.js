@@ -24,14 +24,14 @@ function MoviesCard({ movie, isSavedMoviesPage }) {
   }
 
   return (
-    <div className='movie-card'>
+    <li className='movie-card'>
       <img className='movie-card__image' src={image} alt={nameRU} />
       <div className='movie-card__desc'>
           <h3 className='movie-card__title'>{nameRU}</h3>
           <button className={`movie-card__btn ${buttonClass()}`}/>
       </div>
         <p className='movie-card__duration'>{formatedDuration}</p>
-    </div>
+    </li>
   );
 };
 

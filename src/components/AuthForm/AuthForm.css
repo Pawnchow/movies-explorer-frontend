@@ -59,6 +59,7 @@
   color: #EE3465;
   min-height: 24px;
   padding: 10px 0 5px;
+  box-sizing: border-box;
 }
 
 .auth__buttons {
@@ -109,7 +110,11 @@
     justify-content: center;
     align-items: center;
     width: 320px;
+  }
 
+  .auth__error {
+    max-width: 320px;
+    box-sizing: border-box;
   }
   
   .auth__input {
