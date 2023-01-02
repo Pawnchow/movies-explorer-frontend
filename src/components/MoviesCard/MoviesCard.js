@@ -1,14 +1,18 @@
 import './MoviesCard.css';
 
+function formatMovieDuration(duration) {
+  if (duration >= 60) {
+    const minutes = duration % 60;
+    return `${Math.floor(duration / 60)}ч ${minutes > 0 ? minutes + "м" : ""}`
+  }
+  return `${duration}м`
+}
+
+
+
 
 function MoviesCard({ movie, isSavedMoviesPage }) {
-  function formatMovieDuration(duration) {
-    if (duration >= 60) {
-      const minutes = duration % 60;
-      return `${Math.floor(duration / 60)}ч ${minutes > 0 ? minutes + "м" : ""}`
-    }
-    return `${duration}м`
-  }
+
 
   const { nameRU, image, duration, saved } = movie;
   const formatedDuration = formatMovieDuration(duration);

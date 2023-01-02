@@ -1,43 +1,41 @@
 import './AuthForm.css';
 import logoMain from '../../images/logo.svg'
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import useForm from '../../hooks/useForm';
 
-function AuthForm({ type, text }) {
+function AuthForm({ type, text, onSubmit }) {
 
-  const [errorMessage, seteErorMessage] = useState({ name: '', email: '', password: '' });
-  const [inputValue, setinputValue] = useState({ name: '', email: '', password: '' });
+  const { values, errors, isFormValid, handleChange, resetForm } = useForm();
 
-  //TODO сделать отдельный хук
-
-  const handleChange = (evt) => {
-    const { value, name, validationMessage } = evt.target;
-    setinputValue({ ...inputValue, [name]: value });
-    seteErorMessage({ ...errorMessage, [name]: validationMessage });
-  };
-
-  const signupFormMarkup = () => {
+  function signupFormMarkup() {
     if (type === 'signup') {
       return (
         <div className='auth__form-item'>
           <label className='auth__label'>Имя</label>
           <input
-            className={`auth__input ${errorMessage.name ? 'error' : ''}`}
+            className={`auth__input ${errors.name ? 'error' : ''}`}
             name='name'
+            id='name'
             placeholder='Имя'
             type='text'
-            value={inputValue.name}
+            value={values.name || ''}
             onChange={handleChange}
             required
           />
-          <span className='auth__error'>{errorMessage.name}</span>
+          <span className='auth__error'>{errors.name}</span>
         </div>
       )
     }
   }
 
+  function handleSubmit(evt) {
+    evt.preventDefault();
+    onSubmit(values);
+    resetForm();
+  }
+
   return (
-    <main className='auth'>
+    <form className='auth' onSubmit={handleSubmit}>
       <Link to='/'>
         <img className='auth__logo' src={logoMain} alt='Логотип' />
       </Link>
@@ -46,31 +44,33 @@ function AuthForm({ type, text }) {
       <div className='auth__form-item'>
         <label className='auth__label'>E-mail</label>
         <input
-          className={`auth__input ${errorMessage.email ? 'error' : ''}`}
+          className={`auth__input ${errors.email ? 'error' : ''}`}
           name='email'
           placeholder='E-mail'
           type='email'
-          value={inputValue.email}
+          id='email'
+          value={values || ''}
           onChange={handleChange}
           required
         />
-        <span className='auth__error'>{errorMessage.email}</span>
+        <span className='auth__error'>{errors.email}</span>
       </div>
       <div className='auth__form-item'>
         <label className='auth__label'>Имя</label>
         <input
-          className={`auth__input ${errorMessage.password ? 'error' : ''}`}
+          className={`auth__input ${errors.password ? 'error' : ''}`}
           name='password'
+          id='password'
           placeholder='Пароль'
           type='password'
-          value={inputValue.password}
+          value={values || ''}
           onChange={handleChange}
           required
         />
-        <span className='auth__error'>{errorMessage.password}</span>
+        <span className='auth__error'>{errors.password}</span>
       </div>
       <div className='auth__buttons'>
-        <button className='auth__btn' type='submit'>{text.buttonText}</button>
+        <button className='auth__btn' type='submit' disabled={isFormValid}>{text.buttonText}</button>
         <p className='auth__question'>{text.questText}
           {
             type === 'signup'
@@ -79,7 +79,7 @@ function AuthForm({ type, text }) {
           }
         </p>
       </div>
-    </main>
+    </form>
   )
 }
 

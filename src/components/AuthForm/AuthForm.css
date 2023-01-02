@@ -78,6 +78,15 @@
   margin-bottom: 16px;
 }
 
+.auth__btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.auth__btn:disabled:hover {
+  opacity: 0.5;
+}
+
 .auth__question {
   display: flex;
   justify-content: center;
