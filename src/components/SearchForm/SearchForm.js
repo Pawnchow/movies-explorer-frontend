@@ -1,6 +1,8 @@
 import "./SearchForm.css";
 import useForm from "../../hooks/useForm";
 import { useState } from "react";
+import { filterShortMovies } from "../../ultis/utils";
+
 
 function SearchForm({ onSubmitSearchForm, isLoading }) {
   const { values, errors, isFormValid, handleChange, resetForm } = useForm();
@@ -29,7 +31,7 @@ function SearchForm({ onSubmitSearchForm, isLoading }) {
 
   return (
     <section className="search">
-      <form className="search__form">
+      <form className="search__form" onSubmit={onSubmitSearchForm}>
         <span className="search__icon" />
         <div className="search__input-wrap">
           <input
@@ -40,7 +42,7 @@ function SearchForm({ onSubmitSearchForm, isLoading }) {
             disabled={isLoading}
             onChange={handleChange}
           />
-          <button className="search__button" type="submit">
+          <button className="search__button" type="submit" disabled={isLoading}>
             Найти
           </button>
         </div>

@@ -13,13 +13,19 @@ import Register from '../Register/Register';
 import Profile from '../Profile/Profile';
 import NotFoundError from '../NotFoundError/NotFoundError';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
-import Preloader from '../Preloader/Preloader';
+import moviesApi from '../../ultis/MoviesApi';
 
+import {
+  SERVER_ERROR_MESSAGE,
+  AUTH_ERROR,
+  EMAIL_EXIST,
+  BAD_REQUEST
+} from '../../ultis/constants';
 
 
 function App() {
 
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
   const [movies, setMovies] = useState([]);
   const [savedMovies, setSavedMovies] = useState([]);
@@ -38,7 +44,6 @@ function App() {
       .catch(() => {
         setIsLogged(false);
         setCurrentUser({});
-        navigate('/')
       })
   };
 
@@ -46,25 +51,56 @@ function App() {
     checkToken()
   }, [])
 
+  // Получение информации о пользователе и сохранённых фильмах
+  useEffect(() => {
+    if(isLogged) {
+      Promise.all([mainApi.getUserInfo(), mainApi.getSavedMovies()])
+      .then(([userData, savedMoviesData]) => {
+        setSavedMovies(savedMoviesData);
+        setCurrentUser(userData);
+      })
+      .catch(err => console.log(err))
+    }
+  }, [isLogged]);
+
+  // Обработчик регистрации
   function handleRegistration(values) {
     const { name, email, password } = values;
     authApi.register({ password, email, name })
       .then(() => handleLogin(password, email))
-      .catch(err => console.log(err))
+      .catch(err => {
+        if (err === 409) {
+          setError(EMAIL_EXIST)
+        }
+        else if (err === 400) {
+          setError(BAD_REQUEST)
+        }
+        else setError(SERVER_ERROR_MESSAGE)
+      })
   };
 
+  // Обработчик авторизации
   function handleLogin(values) {
     const { email, password } = values;
     authApi.authorize({ password, email })
       .then(res => {
         setIsLogged(true);
         setCurrentUser(res);
+        navigate('/movies');
       })
-      .catch(() => {
+      .catch(err => {
         setIsLogged(false);
+        if (err === 401) {
+          setError(AUTH_ERROR)
+        }
+        else if (err === 400) {
+          setError(BAD_REQUEST)
+        }
+        else setError(SERVER_ERROR_MESSAGE)
       })
   };
 
+  // Обработчик выхода из приложения
   function handleSignOut() {
     if (isLogged) {
       authApi.signOut()
@@ -72,12 +108,14 @@ function App() {
           setIsLogged(false);
           setCurrentUser({});
           setSavedMovies([]);
+          localStorage.clear();
           navigate('/');
         })
         .catch(err => console.log(err))
     };
   };
 
+  // Обработчик обновления информации о пользователе
   function handleUpadteUserInfo(values) {
     setIsLoading(true);
     const { name, email } = values;
@@ -85,16 +123,28 @@ function App() {
       .then(res => {
         setCurrentUser(res)
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        if (err === 409) {
+          setError(EMAIL_EXIST)
+        }
+        else if (err === 400) {
+          setError(BAD_REQUEST)
+        }
+        else setError(SERVER_ERROR_MESSAGE)
+      })
       .finally(() => setIsLoading(false))
   };
 
-  function handleSaveMovie(movieData) {
-    mainApi.saveMovie(movieData)
-      .then(res => {})
+  // Обработчик сохранения фильма
+  function handleSaveMovie(movie) {
+    mainApi.saveMovie(movie)
+      .then(res => {
+        setSavedMovies(...savedMovies, movie)
+      })
       .catch(err => console.log(err))
   };
 
+  // Обработчик удаления фильма
   function handleDeleteMovie(movieId) {
     setIsLoading(true);
     mainApi.deleteMovie(movieId)
@@ -105,45 +155,23 @@ function App() {
       .finally(() => setIsLoading(false))
   };
 
-
-
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Отображение прелоадера
-  function renderPreloader() {
-    if (isLoading) return (
-      <>
-        <Preloader />
-      </>
-    )
-  };
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className='page'>
+        {isLogged !== null &&
         <Routes>
           <Route exect path='/' element={<Main isLogged={isLogged} />}/>
           <Route element={<ProtectedRoute isLogged={isLogged} />}>
-          <Route path='/movies' element={<Movies movies={movies} isLogged={isLogged} showMore={true} />}/>
-            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} isLogged={isLogged} showMore={false} isSavedMoviesPage={true} />} />
-            <Route path='/profile' element={<Profile isLogged={isLogged} onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
+            <Route path='/movies' element={<Movies movies={movies} showMore={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} isLoading={isLoading} />}/>
+            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} isSavedMoviesPage={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} isLoading={isLoading} />} />
+            <Route path='/profile' element={<Profile onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
           </Route>
-          <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} />} />
-          <Route path='/signup' element={isLogged ? <Navigate to='/'/> : <Register onRegister={handleRegistration}/>} />
+          <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} error={error} />} />
+          <Route path='/signup' element={isLogged ? <Navigate to='/'/> : <Register onRegister={handleRegistration} error={error} />} />
           <Route path='/*' element={<NotFoundError />}/>
         </Routes>
+        }
       </div>
     </CurrentUserContext.Provider>
   )

@@ -62,7 +62,7 @@ class MainApi {
   }
 
   deleteMovie(movieId) {
-    return this._getResponse('movie', {
+    return this._getResponse('movies/' + movieId, {
       method: 'DELETE',
       headers: this._headers,
       credentials: 'include'

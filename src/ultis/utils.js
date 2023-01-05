@@ -8,11 +8,10 @@ export function formatMovieDuration(duration) {
   return `${duration}м`
 };
 
-export function filterShortMovies(movies, isShorts) {
-  if (isShorts) {
+export function filterShortMovies(movies, isShort) {
+  if (isShort) {
     return movies.filter(movie => movie.duration <= SHORT_MOVIE_DURATION);
   } else {
     return movies;
   }
 };
-

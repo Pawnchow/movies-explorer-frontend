@@ -7,6 +7,10 @@
   width: 364px;
 }
 
+.movie-card__trailer-link {
+  display: flex;
+  text-decoration: none;
+}
 .movie-card__image {
   width: 100%;
   object-fit: cover;

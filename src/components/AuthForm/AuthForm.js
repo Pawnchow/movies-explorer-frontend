@@ -3,7 +3,7 @@ import logoMain from '../../images/logo.svg'
 import { Link } from "react-router-dom";
 import useForm from '../../hooks/useForm';
 
-function AuthForm({ type, text, onSubmitForm, responseError }) {
+function AuthForm({ type, text, onSubmitForm, error }) {
 
   const { values, errors, isFormValid, handleChange, resetForm } = useForm();
 
@@ -70,7 +70,7 @@ function AuthForm({ type, text, onSubmitForm, responseError }) {
         />
         <span className='auth__error'>{errors.password}</span>
       </div>
-      <div className='auth__response-error'>Ошибочка</div>
+      <div className='auth__response-error'>{error}</div>
       <div className='auth__buttons'>
         <button className='auth__btn' type='submit' disabled={!isFormValid}>{text.buttonText}</button>
         <p className='auth__question'>{text.questText}
