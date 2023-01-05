@@ -1,5 +1,5 @@
 import './App.css';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import mainApi from '../../ultis/MainApi';
@@ -35,8 +35,8 @@ function App() {
         setIsLogged(true);
         setCurrentUser(res);
       })
-      .catch(err => {
-        setIsLoading(false);
+      .catch(() => {
+        setIsLogged(false);
         setCurrentUser({});
         navigate('/')
       })
@@ -44,21 +44,23 @@ function App() {
 
   useEffect(() => {
     checkToken()
-  }, );
+  }, [])
 
-  function handleRegistration({ name, email, password }) {
-    authApi.register(password, email, name)
+  function handleRegistration(values) {
+    const { name, email, password } = values;
+    authApi.register({ password, email, name })
       .then(() => handleLogin(password, email))
       .catch(err => console.log(err))
   };
 
-  function handleLogin({ password, email }) {
-    authApi.authorize(password, email)
+  function handleLogin(values) {
+    const { email, password } = values;
+    authApi.authorize({ password, email })
       .then(res => {
         setIsLogged(true);
-
+        setCurrentUser(res);
       })
-      .catch(err => {
+      .catch(() => {
         setIsLogged(false);
       })
   };
@@ -76,8 +78,9 @@ function App() {
     };
   };
 
-  function handleUpadteUserInfo({ name, email }) {
+  function handleUpadteUserInfo(values) {
     setIsLoading(true);
+    const { name, email } = values;
     mainApi.setUserInfo(name, email)
       .then(res => {
         setCurrentUser(res)
@@ -131,12 +134,14 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className='page'>
         <Routes>
-          <Route exect path='/' element={<Main />}/>
-          <Route path='/movies' element={ProtectedRoute} movies={movies} showMore={true}/>
-          <Route path='/saved-movies' element={ProtectedRoute} movies={savedMovies} showMore={false} isSavedMoviesPage={true} />
-          <Route path='/profile' element={ProtectedRoute} />
-          <Route path='/signin' element={<Login />}/>
-          <Route path='/signup' element={<Register />}/>
+          <Route exect path='/' element={<Main isLogged={isLogged} />}/>
+          <Route element={<ProtectedRoute isLogged={isLogged} />}>
+          <Route path='/movies' element={<Movies movies={movies} isLogged={isLogged} showMore={true} />}/>
+            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} isLogged={isLogged} showMore={false} isSavedMoviesPage={true} />} />
+            <Route path='/profile' element={<Profile isLogged={isLogged} onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
+          </Route>
+          <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} />} />
+          <Route path='/signup' element={isLogged ? <Navigate to='/'/> : <Register onRegister={handleRegistration}/>} />
           <Route path='/*' element={<NotFoundError />}/>
         </Routes>
       </div>

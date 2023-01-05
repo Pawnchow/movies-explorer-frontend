@@ -71,7 +71,8 @@ class MainApi {
 }
 
 const mainApi = new MainApi ({
-  baseUrl: 'https://movies.pawnchow.nomoredomains.club/',
+  //baseUrl: 'https://movies.pawnchow.nomoredomains.club/',
+  baseUrl: 'http://localhost:3000/',
   headers: {
     'Content-type': 'application/json',
   }

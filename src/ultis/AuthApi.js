@@ -1,6 +1,6 @@
 class AuthApi {
   constructor(options) {
-    this._baseUrl = this.baseUrl;
+    this._baseUrl = options.baseUrl;
     this._headers = options.headers;
   }
 
@@ -33,6 +33,7 @@ class AuthApi {
 
   signOut() {
     return this._getResponse('signout', {
+      method: 'POST',
       headers: this._headers,
       credentials: 'include'
     })
@@ -47,7 +48,8 @@ class AuthApi {
 }
 
 const authApi = new AuthApi({
-  baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  // baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  baseUrl: 'http://localhost:3000/',
   headers: {
     'Content-type': 'application/json',
   }

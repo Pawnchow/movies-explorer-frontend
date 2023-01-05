@@ -4,10 +4,10 @@ import { Link, NavLink } from 'react-router-dom';
 import BurgerMenu from '../BurgerMenu/BurgerMenu';
 
 function NavBar({ isLogged }) {
-  return isLogged ? MoviesMenu() : LandingMenu();
+  return isLogged ? LoggedMenu() : NotLoggedMenu();
 };
 
- function LandingMenu() {
+ function NotLoggedMenu() {
   return (
     <nav className='nav-landing'>
       <Link className='nav-landing__link-reg' to='/signup'>Регистрация</Link>
@@ -16,7 +16,7 @@ function NavBar({ isLogged }) {
   );
 };
 
-function MoviesMenu() {
+function LoggedMenu() {
   const setActive = ({ isActive }) =>(isActive ? 'nav-movies__link nav-movies__link_active' : 'nav-movies__link');
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const toggleBurgerMenu = () => {

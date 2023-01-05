@@ -3,7 +3,7 @@ import logoMain from '../../images/logo.svg'
 import { Link } from "react-router-dom";
 import useForm from '../../hooks/useForm';
 
-function AuthForm({ type, text, onSubmit }) {
+function AuthForm({ type, text, onSubmitForm, responseError }) {
 
   const { values, errors, isFormValid, handleChange, resetForm } = useForm();
 
@@ -21,6 +21,7 @@ function AuthForm({ type, text, onSubmit }) {
             value={values.name || ''}
             onChange={handleChange}
             required
+            pattern='^[A-Za-zА-Яа-яЁё \s -]+$'
           />
           <span className='auth__error'>{errors.name}</span>
         </div>
@@ -30,7 +31,7 @@ function AuthForm({ type, text, onSubmit }) {
 
   function handleSubmit(evt) {
     evt.preventDefault();
-    onSubmit(values);
+    onSubmitForm(values);
     resetForm();
   }
 
@@ -49,7 +50,7 @@ function AuthForm({ type, text, onSubmit }) {
           placeholder='E-mail'
           type='email'
           id='email'
-          value={values || ''}
+          value={values.email || ''}
           onChange={handleChange}
           required
         />
@@ -63,14 +64,15 @@ function AuthForm({ type, text, onSubmit }) {
           id='password'
           placeholder='Пароль'
           type='password'
-          value={values || ''}
+          value={values.password || ''}
           onChange={handleChange}
           required
         />
         <span className='auth__error'>{errors.password}</span>
       </div>
+      <div className='auth__response-error'>Ошибочка</div>
       <div className='auth__buttons'>
-        <button className='auth__btn' type='submit' disabled={isFormValid}>{text.buttonText}</button>
+        <button className='auth__btn' type='submit' disabled={!isFormValid}>{text.buttonText}</button>
         <p className='auth__question'>{text.questText}
           {
             type === 'signup'

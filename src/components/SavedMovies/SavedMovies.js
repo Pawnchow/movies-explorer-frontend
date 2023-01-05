@@ -1,8 +1,8 @@
 import Movies from "../Movies/Movies";
 
-function SavedMovies({ movies, isSavedMoviesPage }) {
+function SavedMovies({ movies, isSavedMoviesPage, isLogged }) {
   return(
-    <Movies movies={movies} isSavedMoviesPage={isSavedMoviesPage} />
+    <Movies movies={movies} isSavedMoviesPage={isSavedMoviesPage} isLogged={isLogged} />
   );
 };
 

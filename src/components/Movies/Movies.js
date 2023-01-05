@@ -6,10 +6,10 @@ import Footer from '../Footer/Footer';
 import ShowMore from '../ShowMore/ShowMore';
 
 
-function Movies({ movies, showMore, isSavedMoviesPage }) {
+function Movies({ movies, showMore, isSavedMoviesPage, isLogged }) {
   return (
     <>
-      <Header isLogged={true} />
+      <Header isLogged={isLogged} />
       <main className="movies">
         <SearchForm />
         <MoviesCardList movies={movies} isSavedMoviesPage={isSavedMoviesPage} />

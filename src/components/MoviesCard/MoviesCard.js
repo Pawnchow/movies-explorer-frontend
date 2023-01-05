@@ -1,18 +1,7 @@
 import './MoviesCard.css';
-
-function formatMovieDuration(duration) {
-  if (duration >= 60) {
-    const minutes = duration % 60;
-    return `${Math.floor(duration / 60)}ч ${minutes > 0 ? minutes + "м" : ""}`
-  }
-  return `${duration}м`
-}
-
-
-
+import { formatMovieDuration } from '../../ultis/utils';
 
 function MoviesCard({ movie, isSavedMoviesPage }) {
-
 
   const { nameRU, image, duration, saved } = movie;
   const formatedDuration = formatMovieDuration(duration);
