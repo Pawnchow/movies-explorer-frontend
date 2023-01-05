@@ -1,37 +1,24 @@
 import "./SearchForm.css";
 import useForm from "../../hooks/useForm";
-import { useState } from "react";
-import { filterShortMovies } from "../../ultis/utils";
+import { useState, useEffect } from "react";
 
 
-function SearchForm({ onSubmitSearchForm, isLoading }) {
-  const { values, errors, isFormValid, handleChange, resetForm } = useForm();
+function SearchForm({ onSubmitSearchForm, isLoading, isSavedMoviesPage }) {
+  const { values, isFormValid, handleChange, setValues } = useForm();
   const [isShort, setIsShort] = useState(false);
 
   function handleSwitchCheckbox() {
     setIsShort(!isShort)
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  function handleSubmitSearchForm(evt) {
+    evt.preventDefault();
+    onSubmitSearchForm(values.searchQuery, isShort);
+  };
 
   return (
     <section className="search">
-      <form className="search__form" onSubmit={onSubmitSearchForm}>
+      <form className="search__form" onSubmit={handleSubmitSearchForm}>
         <span className="search__icon" />
         <div className="search__input-wrap">
           <input
@@ -39,10 +26,13 @@ function SearchForm({ onSubmitSearchForm, isLoading }) {
             type="text"
             placeholder="Фильм"
             required
+            name="searchQuery"
+            id="searchQuery"
+            value={values.searchQuery || ''}
             disabled={isLoading}
             onChange={handleChange}
           />
-          <button className="search__button" type="submit" disabled={isLoading}>
+          <button className="search__button" type="submit" disabled={(isLoading || !isFormValid)}>
             Найти
           </button>
         </div>
@@ -51,6 +41,7 @@ function SearchForm({ onSubmitSearchForm, isLoading }) {
             <input
               className="search__checkbox"
               id="search-checkbox"
+              name="search-checkbox"
               type="checkbox"
               onChange={handleSwitchCheckbox}
               checked={isShort}

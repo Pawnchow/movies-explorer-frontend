@@ -27,9 +27,7 @@ function App() {
 
   const [isLogged, setIsLogged] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
-  const [movies, setMovies] = useState([]);
   const [savedMovies, setSavedMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const navigate = useNavigate();
@@ -117,7 +115,6 @@ function App() {
 
   // Обработчик обновления информации о пользователе
   function handleUpadteUserInfo(values) {
-    setIsLoading(true);
     const { name, email } = values;
     mainApi.setUserInfo(name, email)
       .then(res => {
@@ -132,30 +129,27 @@ function App() {
         }
         else setError(SERVER_ERROR_MESSAGE)
       })
-      .finally(() => setIsLoading(false))
   };
 
   // Обработчик сохранения фильма
   function handleSaveMovie(movie) {
     mainApi.saveMovie(movie)
-      .then(res => {
-        setSavedMovies(...savedMovies, movie)
+      .then(movie => {
+        setSavedMovies([ movie, ...savedMovies])
       })
       .catch(err => console.log(err))
   };
 
   // Обработчик удаления фильма
   function handleDeleteMovie(movieId) {
-    setIsLoading(true);
     mainApi.deleteMovie(movieId)
       .then(() => {
         setSavedMovies(prevMovies => prevMovies.filter(item => item !== movieId));
       })
       .catch(err => console.log(err))
-      .finally(() => setIsLoading(false))
   };
 
-  
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className='page'>
@@ -163,8 +157,8 @@ function App() {
         <Routes>
           <Route exect path='/' element={<Main isLogged={isLogged} />}/>
           <Route element={<ProtectedRoute isLogged={isLogged} />}>
-            <Route path='/movies' element={<Movies movies={movies} showMore={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} isLoading={isLoading} />}/>
-            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} isSavedMoviesPage={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} isLoading={isLoading} />} />
+            <Route path='/movies' element={<Movies showMore={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} />}/>
+            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} handleDeleteMovie={handleDeleteMovie} />} />
             <Route path='/profile' element={<Profile onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
           </Route>
           <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} error={error} />} />
