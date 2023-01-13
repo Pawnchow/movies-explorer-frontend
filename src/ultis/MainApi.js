@@ -10,7 +10,8 @@ class MainApi {
         if (res.ok) {
           return res.json();
         }
-        return Promise.reject((`Ошибка ${res.status}: ${res.statusText}`));
+        return res.json()
+        .then (res => Promise.reject(res));
       })
   }
 
@@ -71,8 +72,7 @@ class MainApi {
 }
 
 const mainApi = new MainApi ({
-  //baseUrl: 'https://movies.pawnchow.nomoredomains.club/',
-  baseUrl: 'http://localhost:3000/',
+  baseUrl: 'https://movies.pawnchow.nomoredomains.club/',
   headers: {
     'Content-type': 'application/json',
   }

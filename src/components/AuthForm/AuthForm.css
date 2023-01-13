@@ -58,6 +58,7 @@
   min-height: 24px;
   padding: 10px 0 5px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .auth__response-error {
@@ -122,7 +123,6 @@
 
 @media (max-width: 480px) {
   .auth {
-    display: flex;
     padding: 56px 0;
     justify-content: center;
     align-items: center;
@@ -163,5 +163,9 @@
   .auth__link {
     font-size: 12px;
     line-height: 15px;
+  }
+
+  .auth__form-item {
+    width: 260px;
   }
 }

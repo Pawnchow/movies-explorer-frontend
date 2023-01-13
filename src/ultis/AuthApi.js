@@ -10,7 +10,8 @@ class AuthApi {
         if (res.ok) {
           return res.json();
         }
-        return Promise.reject((`Ошибка ${res.status}: ${res.statusText}`));
+        return res.json()
+          .then (res => Promise.reject(res));
       })
   }
 
@@ -48,8 +49,7 @@ class AuthApi {
 }
 
 const authApi = new AuthApi({
-  // baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
-  baseUrl: 'http://localhost:3000/',
+  baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
   headers: {
     'Content-type': 'application/json',
   }

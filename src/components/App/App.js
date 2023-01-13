@@ -1,10 +1,9 @@
 import './App.css';
-import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import mainApi from '../../ultis/MainApi';
 import authApi from '../../ultis/AuthApi';
-
 import Main from "../Main/Main";
 import Movies from "../Movies/Movies";
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -13,15 +12,6 @@ import Register from '../Register/Register';
 import Profile from '../Profile/Profile';
 import NotFoundError from '../NotFoundError/NotFoundError';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
-import moviesApi from '../../ultis/MoviesApi';
-
-import {
-  SERVER_ERROR_MESSAGE,
-  AUTH_ERROR,
-  EMAIL_EXIST,
-  BAD_REQUEST
-} from '../../ultis/constants';
-
 
 function App() {
 
@@ -29,8 +19,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [savedMovies, setSavedMovies] = useState([]);
   const [error, setError] = useState('');
-
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Проверка токена
   function checkToken() {
@@ -42,12 +32,20 @@ function App() {
       .catch(() => {
         setIsLogged(false);
         setCurrentUser({});
+        setSavedMovies([]);
+        localStorage.clear();
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;";
+        navigate('/');
       })
   };
 
   useEffect(() => {
     checkToken()
   }, [])
+
+  useEffect(() => {
+    setError('');
+  }, [location]);
 
   // Получение информации о пользователе и сохранённых фильмах
   useEffect(() => {
@@ -56,6 +54,7 @@ function App() {
       .then(([userData, savedMoviesData]) => {
         setSavedMovies(savedMoviesData);
         setCurrentUser(userData);
+        setError('');
       })
       .catch(err => console.log(err))
     }
@@ -65,15 +64,10 @@ function App() {
   function handleRegistration(values) {
     const { name, email, password } = values;
     authApi.register({ password, email, name })
-      .then(() => handleLogin(password, email))
+      .then(() => handleLogin({password, email}))
       .catch(err => {
-        if (err === 409) {
-          setError(EMAIL_EXIST)
-        }
-        else if (err === 400) {
-          setError(BAD_REQUEST)
-        }
-        else setError(SERVER_ERROR_MESSAGE)
+        setError(err.message)
+        setTimeout(() => {setError('')}, 5000);
       })
   };
 
@@ -88,21 +82,16 @@ function App() {
       })
       .catch(err => {
         setIsLogged(false);
-        if (err === 401) {
-          setError(AUTH_ERROR)
-        }
-        else if (err === 400) {
-          setError(BAD_REQUEST)
-        }
-        else setError(SERVER_ERROR_MESSAGE)
+        setError(err.message)
+        setTimeout(() => {setError('')}, 5000)
       })
   };
 
   // Обработчик выхода из приложения
   function handleSignOut() {
-    if (isLogged) {
+    if(isLogged) {
       authApi.signOut()
-        .then(res => {
+        .then(() => {
           setIsLogged(false);
           setCurrentUser({});
           setSavedMovies([]);
@@ -110,7 +99,7 @@ function App() {
           navigate('/');
         })
         .catch(err => console.log(err))
-    };
+    }
   };
 
   // Обработчик обновления информации о пользователе
@@ -121,13 +110,8 @@ function App() {
         setCurrentUser(res)
       })
       .catch(err => {
-        if (err === 409) {
-          setError(EMAIL_EXIST)
-        }
-        else if (err === 400) {
-          setError(BAD_REQUEST)
-        }
-        else setError(SERVER_ERROR_MESSAGE)
+        setError(err.message)
+        setTimeout(() => {setError('')}, 5000)
       })
   };
 
@@ -141,14 +125,13 @@ function App() {
   };
 
   // Обработчик удаления фильма
-  function handleDeleteMovie(movieId) {
-    mainApi.deleteMovie(movieId)
+  function handleDeleteMovie(movie) {
+    mainApi.deleteMovie(movie._id)
       .then(() => {
-        setSavedMovies(prevMovies => prevMovies.filter(item => item !== movieId));
+        setSavedMovies(prevMovies => prevMovies.filter(item => item._id !== movie._id));
       })
       .catch(err => console.log(err))
   };
-
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -157,8 +140,8 @@ function App() {
         <Routes>
           <Route exect path='/' element={<Main isLogged={isLogged} />}/>
           <Route element={<ProtectedRoute isLogged={isLogged} />}>
-            <Route path='/movies' element={<Movies showMore={true} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} />}/>
-            <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} handleDeleteMovie={handleDeleteMovie} />} />
+            <Route path='/movies' element={<Movies savedMovies={savedMovies} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} />}/>
+            <Route path='/saved-movies' element={<SavedMovies savedMovies={savedMovies} handleDeleteMovie={handleDeleteMovie} />} />
             <Route path='/profile' element={<Profile onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
           </Route>
           <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} error={error} />} />

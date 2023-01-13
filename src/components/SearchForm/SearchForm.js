@@ -1,20 +1,24 @@
 import "./SearchForm.css";
 import useForm from "../../hooks/useForm";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
-
-function SearchForm({ onSubmitSearchForm, isLoading, isSavedMoviesPage }) {
-  const { values, isFormValid, handleChange, setValues } = useForm();
-  const [isShort, setIsShort] = useState(false);
-
-  function handleSwitchCheckbox() {
-    setIsShort(!isShort)
-  };
+function SearchForm({ onSubmitSearchForm, onClickCheckbox, isLoading, isSavedMoviesPage, isShort }) {
+  const { values, isFormValid, handleChange, setValues, setIsFormValid } = useForm();
 
   function handleSubmitSearchForm(evt) {
     evt.preventDefault();
-    onSubmitSearchForm(values.searchQuery, isShort);
+    onSubmitSearchForm(values.searchQuery);
   };
+
+  useEffect(() => {
+    if(!isSavedMoviesPage) {
+      const input = localStorage.getItem('searchQuery');
+      if (input) {
+        setValues({searchQuery: input});
+        setIsFormValid(true);
+      }
+    }
+  }, [isSavedMoviesPage, setValues, setIsFormValid])
 
   return (
     <section className="search">
@@ -25,7 +29,7 @@ function SearchForm({ onSubmitSearchForm, isLoading, isSavedMoviesPage }) {
             className="search__input"
             type="text"
             placeholder="Фильм"
-            required
+            required={isSavedMoviesPage ? false : true}
             name="searchQuery"
             id="searchQuery"
             value={values.searchQuery || ''}
@@ -43,7 +47,7 @@ function SearchForm({ onSubmitSearchForm, isLoading, isSavedMoviesPage }) {
               id="search-checkbox"
               name="search-checkbox"
               type="checkbox"
-              onChange={handleSwitchCheckbox}
+              onChange={onClickCheckbox}
               checked={isShort}
               disabled={isLoading}
             />

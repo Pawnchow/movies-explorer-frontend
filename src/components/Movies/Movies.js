@@ -3,37 +3,74 @@ import Header from "../Header/Header";
 import SearchForm from "../SearchForm/SearchForm";
 import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import Footer from "../Footer/Footer";
-import ShowMore from "../ShowMore/ShowMore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moviesApi from "../../ultis/MoviesApi";
+import { filterMovies } from "../../ultis/utils";
+import { SEARCH_ERROR, NOTHING_FOUND } from "../../ultis/constants";
 
-function Movies({
-  showMore,
-  isSavedMoviesPage,
-  handleDeleteMovie,
-  handleSaveMovie,
-}) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [movies, setMovies] = useState([]);
+function Movies({ handleDeleteMovie, handleSaveMovie, savedMovies }) {
+  const checkboxInStorage = localStorage.getItem("isShort") === "true" ? true : false;
+  const allMovies = localStorage.getItem("allMovies");
+  const searchQueryInStorage = localStorage.getItem("searchQuery");
+
+  const [isShort, setIsShort] = useState(checkboxInStorage);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [isLoading, setIsloading] = useState(false);
+  const [responseError, setResponseError] = useState("");
+  const [isFound, setIsFound] = useState(true);
 
-  function handleSubmitSearchForm(searchQuery, isShort) {
+  function toggleSwitchCheckbox() {
+    setIsShort(!isShort);
+  }
+
+  function handleSubmitSearchForm(searchQuery) {
     setIsloading(true);
-    setSearchQuery(searchQuery);
-    localStorage.setItem('searchQuery', searchQuery);
-    localStorage.setItem('isShortSwitched', isShort);
+    handleSearchMovies(searchQuery, isShort);
+  }
 
-    if(localStorage.getItem('movies' == null)) {
-      moviesApi.getMovies()
-        .then(movies => {
-          localStorage.setItem('movies', movies);
-          
+  function handleSearchMovies(searchQuery) {
+    localStorage.setItem("isShort", isShort);
+    localStorage.setItem("searchQuery", searchQuery);
+
+    if (!allMovies) {
+      moviesApi
+        .getMovies()
+        .then((movies) => {
+          localStorage.setItem("allMovies", JSON.stringify(movies));
+          const filtered = filterMovies(movies, searchQueryInStorage, isShort);
+          setFilteredMovies(filtered);
+          checkIsFound(filtered);
         })
+        .catch(() => {
+          setResponseError(SEARCH_ERROR);
+        })
+        .finally(() => {
+          setIsloading(false);
+        });
+    } else {
+      const filtered = filterMovies(JSON.parse(allMovies), searchQueryInStorage, isShort);
+      setFilteredMovies(filtered);
+      checkIsFound(filtered);
+      setIsloading(false);
     }
   }
 
+  function checkIsFound(movies) {
+    if (movies?.length > 0) {
+      setIsFound(true);
+    } else {
+      setIsFound(false);
+      setResponseError(NOTHING_FOUND);
+    }
+  }
 
+  useEffect(() => {
+    if (searchQueryInStorage && allMovies) {
+      const filtered = filterMovies(JSON.parse(allMovies), searchQueryInStorage, isShort)
+      setFilteredMovies(filtered);
+      checkIsFound(filtered);
+    }
+  }, [allMovies, searchQueryInStorage, isShort]);
 
   return (
     <>
@@ -42,15 +79,20 @@ function Movies({
         <SearchForm
           onSubmitSearchForm={handleSubmitSearchForm}
           isLoading={isLoading}
-          isSavedMoviesPage={isSavedMoviesPage}
+          onClickCheckbox={toggleSwitchCheckbox}
+          isSavedMoviesPage={false}
+          isShort={isShort}
         />
         <MoviesCardList
-          movies={movies}
-          isSavedMoviesPage={isSavedMoviesPage}
+          isLoading={isLoading}
+          movies={filteredMovies}
+          savedMovies={savedMovies}
+          isSavedMoviesPage={false}
           handleDeleteMovie={handleDeleteMovie}
           handleSaveMovie={handleSaveMovie}
+          responseError={responseError}
+          isFound={isFound}
         />
-        <ShowMore showMore={showMore} />
       </main>
       <Footer />
     </>
