@@ -64,6 +64,7 @@ function Movies({ handleDeleteMovie, handleSaveMovie, savedMovies }) {
     }
   }
 
+  // Переделать с useLayout
   useEffect(() => {
     if (searchQueryInStorage && allMovies) {
       const filtered = filterMovies(JSON.parse(allMovies), searchQueryInStorage, isShort)
