@@ -124,7 +124,7 @@ function Profile({ onProfileUpdate, onSignout, serverResponse }) {
             </div>
             <span className="profile__error">{errors.email}</span>
           </div>
-          <span className="profile__response-error">{serverResponse}</span>
+          <span className={`profile__response ${serverResponse?.type === 'error' ? 'profile__response_error' : 'profile__response_success'}`}>{serverResponse.message}</span>
           {buttonsMarkup()}
         </form>
       </main>

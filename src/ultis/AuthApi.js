@@ -49,7 +49,8 @@ class AuthApi {
 }
 
 const authApi = new AuthApi({
-  baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  //baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  baseUrl: 'http://localhost:3000/',
   headers: {
     'Content-type': 'application/json',
   }

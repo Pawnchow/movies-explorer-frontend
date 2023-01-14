@@ -114,14 +114,21 @@
   opacity: 0.5;
 }
 
-.profile__response-error {
+.profile__response {
   text-align: center;
   font-weight: 400;
   font-size: 13px;
   line-height: 16px;
-  color: #EE3465;
   min-height: 16px;
   margin-bottom: 220px;
+}
+
+.profile__response_error {
+  color: #EE3465;
+}
+
+.profile__response_success {
+  color: #3DDC84;
 }
 
 @media screen and (max-width: 768px) {

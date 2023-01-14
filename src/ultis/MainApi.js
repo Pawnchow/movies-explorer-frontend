@@ -11,7 +11,7 @@ class MainApi {
           return res.json();
         }
         return res.json()
-        .then (res => Promise.reject(res));
+          .then (res => Promise.reject(res));
       })
   }
 
@@ -72,7 +72,8 @@ class MainApi {
 }
 
 const mainApi = new MainApi ({
-  baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  //baseUrl: 'https://api.movies.pawnchow.nomoredomains.club/',
+  baseUrl: 'http://localhost:3000/',
   headers: {
     'Content-type': 'application/json',
   }

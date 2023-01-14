@@ -18,7 +18,7 @@ function App() {
   const [isLogged, setIsLogged] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
   const [savedMovies, setSavedMovies] = useState([]);
-  const [error, setError] = useState('');
+  const [response, setResponse] = useState({message: '', type: ''});
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,9 +42,9 @@ function App() {
   useEffect(() => {
     checkToken()
   }, [])
-
+  
   useEffect(() => {
-    setError('');
+    setResponse({message: '', type: ''});
   }, [location]);
 
   // Получение информации о пользователе и сохранённых фильмах
@@ -54,7 +54,7 @@ function App() {
       .then(([userData, savedMoviesData]) => {
         setSavedMovies(savedMoviesData);
         setCurrentUser(userData);
-        setError('');
+        setResponse({message: '', type: ''});
       })
       .catch(err => console.log(err))
     }
@@ -66,8 +66,8 @@ function App() {
     authApi.register({ password, email, name })
       .then(() => handleLogin({password, email}))
       .catch(err => {
-        setError(err.message)
-        setTimeout(() => {setError('')}, 5000);
+        setResponse({message: err.message, type: 'error'})
+        setTimeout(() => {setResponse({...response, message: ''})}, 5000);
       })
   };
 
@@ -82,8 +82,8 @@ function App() {
       })
       .catch(err => {
         setIsLogged(false);
-        setError(err.message)
-        setTimeout(() => {setError('')}, 5000)
+        setResponse({message: err.message, type: 'error'})
+        setTimeout(() => {setResponse({...response, message: ''})}, 5000);
       })
   };
 
@@ -108,10 +108,12 @@ function App() {
     mainApi.setUserInfo(name, email)
       .then(res => {
         setCurrentUser(res)
+        setResponse({type: 'success', message: 'Сохранение прошло успешно!'});
+        setTimeout(() => {setResponse({...response, message: ''})}, 5000);
       })
       .catch(err => {
-        setError(err.message)
-        setTimeout(() => {setError('')}, 5000)
+        setResponse({message: err.message, type: 'error'})
+        setTimeout(() => {setResponse({...response, message: ''})}, 5000);
       })
   };
 
@@ -142,10 +144,10 @@ function App() {
           <Route element={<ProtectedRoute isLogged={isLogged} />}>
             <Route path='/movies' element={<Movies savedMovies={savedMovies} handleDeleteMovie={handleDeleteMovie} handleSaveMovie={handleSaveMovie} />}/>
             <Route path='/saved-movies' element={<SavedMovies savedMovies={savedMovies} handleDeleteMovie={handleDeleteMovie} />} />
-            <Route path='/profile' element={<Profile onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={error}/>} />
+            <Route path='/profile' element={<Profile onProfileUpdate={handleUpadteUserInfo} onSignout={handleSignOut} serverResponse={response}/>} />
           </Route>
-          <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} error={error} />} />
-          <Route path='/signup' element={isLogged ? <Navigate to='/'/> : <Register onRegister={handleRegistration} error={error} />} />
+          <Route path='/signin' element={isLogged ? <Navigate to='/'/> : <Login onLogin={handleLogin} error={response.message} />} />
+          <Route path='/signup' element={isLogged ? <Navigate to='/'/> : <Register onRegister={handleRegistration} error={response.message} />} />
           <Route path='/*' element={<NotFoundError />}/>
         </Routes>
         }
