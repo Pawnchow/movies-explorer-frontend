@@ -46,8 +46,6 @@
   outline: 2px solid #4285F4;
 }
 
-
-
 .error {
   color: #EE3465;
 }
@@ -60,6 +58,17 @@
   min-height: 24px;
   padding: 10px 0 5px;
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+.auth__response-error {
+  text-align: center;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 17px;
+  color: #EE3465;
+  margin-top: 31px;
+  min-height: 17px;
 }
 
 .auth__buttons {
@@ -76,6 +85,15 @@
   background-color: #4285F4;
   color: #FFF;
   margin-bottom: 16px;
+}
+
+.auth__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.auth__btn:disabled:hover {
+  opacity: 0.4;
 }
 
 .auth__question {
@@ -105,7 +123,6 @@
 
 @media (max-width: 480px) {
   .auth {
-    display: flex;
     padding: 56px 0;
     justify-content: center;
     align-items: center;
@@ -122,6 +139,16 @@
     width: 260px;
   }
 
+  .auth__response-error {
+    text-align: center;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 12px;
+    color: #EE3465;
+    margin-top: 131px;
+    min-height: 12px;
+  }
+  
   .auth__btn {
     width: 260px;
     font-size: 12px;
@@ -136,5 +163,9 @@
   .auth__link {
     font-size: 12px;
     line-height: 15px;
+  }
+
+  .auth__form-item {
+    width: 260px;
   }
 }

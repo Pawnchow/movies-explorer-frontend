@@ -7,10 +7,10 @@ import AboutMe from '../AboutMe/AboutMe';
 import Portfolio from '../Portfolio/Portfolio';
 import Footer from '../Footer/Footer';
 
-function Main() {
+function Main({ isLogged }) {
   return (
     <>
-      <Header isLogged={false}/>
+      <Header isLogged={isLogged} isLandingPage={true}/>
       <main>
         <Promo />
         <AboutProject />
